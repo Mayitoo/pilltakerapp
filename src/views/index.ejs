@@ -1,15 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <title>Start</title>
-</head>
-<body>
+<%- include('partials/header.ejs') -%>
+<div class="title" style="text-align: center; background-color: lightgray;">
+    <h1>PillTaker</h1>
+</div>
+<div class="container">
+    <% if(messages.includes('Success')) {%>
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <strong><%=messages%></strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+    <%}%>
+</div>
+   
 
-    <h1>hi</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="container">
+                <div class="card">
+                    <form action="/savepill" method="POST">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Nombre del medicamento" name="pname">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Fecha de caducidad" name="dexpire">
+                            </div>
+                            <div class="form-group">
+                                <p>Inicio de consumo del medicamento:</p>
+                                <input type="date" class="form-control" name="dtakei">
+                            </div>
+                            <div class="form-group">
+                                <p>Fin de consumo del medicamento:</p>
+                                <input type="date" class="form-control" name="dtakef">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Imagen del medicamento" name="image">
+                            </div>
+                            <div class="form-group">
+                                <input type="datetime" class="form-control" placeholder="Horario de toma" name="schedulee">
+                            </div>
+                            <div class="form-group">
+                              <button type="submit" class="btn btn-success btn-block">Guardar medicamento</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="container">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th >#</th>
+                                <th >Nombre</th>
+                                <th >Fecha de caducidad</th>
+                                <th >Inicio de toma</th>
+                                <th >Fin de toma</th>
+                                <th >Imagen</th>
+                                <th >Porcion</th>
+                                <th >Opciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                            <%for(let i=0; i < pills.length; i++) {%>
+                              <tr>
+                                <th><%=pills[i].id %></th>
+                                <td><%=pills[i].pname %></td>
+                                <td><%=pills[i].dexpire %></td>
+                                <td><%=pills[i].dtakei %></td>
+                                <td><%=pills[i].dtakef %></td>
+                                <td><%=pills[i].image %></td>
+                                <td><%=pills[i].schedulee%></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-primary btn-sm btn-block" data-toggle="modal" data-target="#editmodal<%= pills[i].id%>">Edit</button>
+                                    <a href="/deletepill/<%=pills[i].id %>" class="btn btn-outline-danger btn-sm btn-block mt-2">Delete</a>
+                                    </td>
+                              </tr>
+                             
+                            <%}%> 
+                            </tbody>
+                          </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%for(let i=0; i < pills.length; i++) {%>
+<!-- update modal -->
+<div id="editmodal<%= pills[i].id%>" class="modal fade"  tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateModal">Modificar datos del medicamento <%= pills[i].pname%></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card">
+              <form action="/editpill/<%= pills[i].id%>" method="POST">
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" value="<%= pills[i].pname%>" class="form-control" placeholder="Nombre del medicamento" name="pname">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" value="<%= pills[i].dexpire%>" class="form-control" placeholder="Fecha de caducidad" name="dexpire">
+                    </div>
+                    <div class="form-group">
+                        <p>Inicio de consumo del medicamento:</p>
+                        <input type="date"  class="form-control" name="dtakei">
+                    </div>
+                    <div class="form-group">
+                        <p>Fin de consumo del medicamento:</p>
+                        <input type="date" class="form-control" name="dtakef">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="<%= pills[i].image%>" placeholder="Imagen del medicamento" name="image">
+                    </div>
+                    <div class="form-group">
+                        <input type="datetime" class="form-control" value="<%= pills[i].schedulee%>" placeholder="Horario de toma" name="schedulee">
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary btn-block">Guardar cambios</button>
+            </div>
+              </form>
+      </div>
+    </div>
+</div>
+<!-- end update modal -->
+    <%}%> 
     
-</body>
-</html>
+
